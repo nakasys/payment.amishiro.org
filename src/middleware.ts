@@ -13,6 +13,8 @@ export async function middleware(request: NextRequest) {
     url.pathname = "/setup";
     return NextResponse.redirect(url);
   }
+  // Cron はログイン Cookie を持たない。合言葉の確認は /api/backup 側で行う。
+  if (request.nextUrl.pathname === "/api/backup") return NextResponse.next();
   return updateSession(request);
 }
 
