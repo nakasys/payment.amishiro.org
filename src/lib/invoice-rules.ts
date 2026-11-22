@@ -67,8 +67,11 @@ export function blockingReasons(recipient: Recipient, settings: Settings): strin
     if (sum !== year.amountYen) reasons.push("明細の合計と請求金額が一致しません");
   }
   if (!recipient.name.trim() && !recipient.addressee.trim()) reasons.push("請求先名が未入力です");
-  if (!recipient.address.trim()) reasons.push("送付先住所が未確定です");
-  else if (!recipient.postalCode.trim() && !/手渡し|持参/.test(recipient.address)) {
+  if (
+    recipient.address.trim() &&
+    !recipient.postalCode.trim() &&
+    !/手渡し|持参/.test(recipient.address)
+  ) {
     reasons.push("郵便番号が未確定です");
   }
   const bank = resolveBank(recipient, settings);
@@ -82,7 +85,6 @@ export function blockingReasons(recipient: Recipient, settings: Settings): strin
     reasons.push("発行者情報が未設定です");
   }
   if (!contact.name || !contact.phone) reasons.push("問い合わせ先が未設定です");
-  if (recipient.reviewFlags.includes("needs_review")) reasons.push("要確認フラグが残っています");
   if (recipient.reviewFlags.includes("duplicate_candidate")) reasons.push("重複の可能性があります");
   if (recipient.reviewFlags.includes("withdrawn")) reasons.push("脱会としてマークされています");
   if (recipient.reviewFlags.includes("old_year") && (!year || year.amountYen == null)) {
