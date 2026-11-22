@@ -81,7 +81,6 @@ export function InvoiceSheet({ model }: { model: InvoiceViewModel }) {
         {bankLines(snapshot.bank).map((line) => (
           <p key={line}>{line}</p>
         ))}
-        {snapshot.dueDate ? <p className="mt-2">支払期限　{formatDate(snapshot.dueDate)}</p> : null}
       </section>
 
       <footer className="mt-10 grid grid-cols-2 gap-6 text-sm leading-7">

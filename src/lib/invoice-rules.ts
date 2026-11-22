@@ -108,7 +108,7 @@ export function buildSnapshot(
       label: line.label,
       amountYen: line.amountYen,
     })) ?? [];
-  const dueDate = year?.dueDate || settings.defaultDueDate;
+  const dueDate = null;
   return {
     invoiceNumber,
     issuedOn,

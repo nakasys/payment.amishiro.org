@@ -30,7 +30,6 @@ export default async function SettingsPage() {
         <Field name="periodStart" label="対象期間の開始" type="date" defaultValue={settings.periodStart} />
         <Field name="periodEnd" label="対象期間の終了" type="date" defaultValue={settings.periodEnd} />
         <Field name="subject" label="件名" defaultValue={settings.subject} />
-        <Field name="defaultDueDate" label="共通の支払期限" type="date" defaultValue={settings.defaultDueDate ?? ""} />
         <label className="text-sm md:col-span-2">
           確認メモ
           <textarea name="reviewNotes" defaultValue={settings.reviewNotes} className="mt-1 min-h-36 w-full rounded-md border border-[var(--line)] px-3 py-2" />
