@@ -1,11 +1,11 @@
 import { PageTitle } from "@/components/shell";
 import { IssuePanel, type IssueRow } from "@/components/issue-panel";
-import { blockingReasons, yearAmountFor } from "@/lib/invoice-rules";
+import { blockingReasons, compareBySourceSheet, yearAmountFor } from "@/lib/invoice-rules";
 import { getRepository } from "@/lib/store";
 
 export default async function InvoicesPage() {
   const state = await (await getRepository()).getState();
-  const rows: IssueRow[] = state.recipients.map((recipient) => ({
+  const rows: IssueRow[] = [...state.recipients].sort(compareBySourceSheet).map((recipient) => ({
     id: recipient.id,
     name: recipient.name || recipient.addressee,
     buildingName: recipient.buildingName,

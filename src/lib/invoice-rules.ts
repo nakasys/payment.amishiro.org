@@ -15,6 +15,10 @@ function pick(override: string | undefined, fallback: string): string {
   return value ? value : fallback;
 }
 
+export function compareBySourceSheet<T extends { sourceSheet: string; name: string }>(a: T, b: T) {
+  return a.sourceSheet.localeCompare(b.sourceSheet, "ja", { numeric: true }) || a.name.localeCompare(b.name, "ja");
+}
+
 export function yearAmountFor(recipient: Recipient, fiscalYear: number) {
   return recipient.yearAmounts.find((year) => year.fiscalYear === fiscalYear) ?? null;
 }

@@ -15,7 +15,7 @@ export default async function RecipientDetailPage({ params }: { params: Promise<
   const invoices = state.invoices.filter((invoice) => invoice.recipientId === recipient.id);
   return (
     <div className="space-y-6">
-      <PageTitle title={recipient.name || "請求先"} description={recipient.sourceSheet ? `元シート: ${recipient.sourceSheet}` : "手入力"} />
+      <PageTitle title={recipient.name || "請求先"} description={recipient.sourceSheet ? `元シート: ${recipient.sourceSheet.replace(/^[\d.\-]+/, "").trim() || recipient.sourceSheet}` : "手入力"} />
       <Panel>
         <p className="text-sm">
           {state.settings.fiscalYearLabel}の請求 {formatYen(year?.amountYen ?? null)}
