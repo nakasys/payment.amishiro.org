@@ -1,6 +1,6 @@
 import { Document, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
 import { formatDate, formatYen, mmToPt } from "@/lib/format";
-import { bankLines } from "@/lib/invoice-rules";
+import { bankLines, invoiceLetter } from "@/lib/invoice-rules";
 import type { InvoiceViewModel, LabelCard, LabelSettings } from "@/lib/types";
 import { registerJapaneseFont } from "@/pdf/font";
 
@@ -8,19 +8,20 @@ registerJapaneseFont();
 
 const styles = StyleSheet.create({
   page: {
-    fontFamily: "IPAexGothic",
+    fontFamily: "IPAexMincho",
     fontSize: 10,
     color: "#1c1915",
     paddingTop: 40,
     paddingBottom: 36,
     paddingHorizontal: 42,
   },
-  titleRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" },
-  title: { fontSize: 22, letterSpacing: 8, textAlign: "center", flex: 1 },
-  meta: { width: 150, fontSize: 9, lineHeight: 1.6 },
+  title: { marginTop: 18, fontSize: 22, letterSpacing: 8, textAlign: "center" },
+  meta: { width: 150, marginLeft: "auto", fontSize: 9, lineHeight: 1.6 },
   metaRow: { flexDirection: "row", justifyContent: "space-between" },
   addressee: { marginTop: 28, fontSize: 16 },
   building: { marginTop: 6, fontSize: 10 },
+  letter: { marginTop: 16, fontFamily: "IPAexMincho", fontSize: 10, lineHeight: 1.7 },
+  closing: { fontFamily: "IPAexMincho", textAlign: "right" },
   table: { marginTop: 16, borderTopWidth: 1, borderBottomWidth: 1, borderColor: "#1c1915" },
   tableRow: { flexDirection: "row", borderBottomWidth: 0.4, borderColor: "#1c1915" },
   th: { width: 78, backgroundColor: "#f7f3ec", padding: 6 },
@@ -40,11 +41,20 @@ const styles = StyleSheet.create({
   line: { flexDirection: "row", borderBottomWidth: 0.4, borderColor: "#d9d0c4", minHeight: 22 },
   lineLabel: { flex: 1, padding: 6 },
   lineAmount: { width: 90, padding: 6, textAlign: "right" },
-  bank: { marginTop: 16, fontSize: 10, lineHeight: 1.6 },
+  bank: {
+    marginTop: 16,
+    borderWidth: 1.5,
+    borderColor: "#1c1915",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    fontSize: 10,
+    lineHeight: 1.6,
+  },
   footer: { marginTop: 28, flexDirection: "row", justifyContent: "space-between" },
   contact: { width: "52%", fontSize: 10, lineHeight: 1.6 },
   issuer: { width: "42%", textAlign: "right", fontSize: 10, lineHeight: 1.6 },
   issuerName: { fontSize: 12 },
+  issuerAddress: { fontSize: 8 },
   watermark: {
     position: "absolute",
     top: 340,
@@ -61,6 +71,7 @@ export function InvoiceDocument({ models }: { models: InvoiceViewModel[] }) {
     <Document title="町会費請求書" language="ja">
       {models.map((model, index) => {
         const snapshot = model.snapshot;
+        const letter = invoiceLetter();
         const addressee = [snapshot.addressee || snapshot.recipientName, snapshot.honorific]
           .filter(Boolean)
           .join("　");
@@ -69,22 +80,25 @@ export function InvoiceDocument({ models }: { models: InvoiceViewModel[] }) {
             {model.preview ? (
               <Text style={styles.watermark}>{model.blocked ? "確認用" : "プレビュー"}</Text>
             ) : null}
-            <View style={styles.titleRow}>
-              <View style={{ width: 150 }} />
-              <Text style={styles.title}>請求書</Text>
-              <View style={styles.meta}>
-                <View style={styles.metaRow}>
-                  <Text>請求番号</Text>
-                  <Text>{snapshot.invoiceNumber}</Text>
-                </View>
-                <View style={styles.metaRow}>
-                  <Text>発行日</Text>
-                  <Text>{formatDate(snapshot.issuedOn)}</Text>
-                </View>
+            <View style={styles.meta}>
+              <View style={styles.metaRow}>
+                <Text>請求番号</Text>
+                <Text>{snapshot.invoiceNumber}</Text>
+              </View>
+              <View style={styles.metaRow}>
+                <Text>発行日</Text>
+                <Text>{formatDate(snapshot.issuedOn)}</Text>
               </View>
             </View>
+            <Text style={styles.title}>請求書</Text>
             <Text style={styles.addressee}>{addressee}</Text>
-            {snapshot.buildingName ? <Text style={styles.building}>対象マンション　{snapshot.buildingName}</Text> : null}
+            {snapshot.buildingName ? <Text style={styles.building}>{snapshot.buildingName}</Text> : null}
+            <View style={styles.letter}>
+              {letter.lines.map((line) => (
+                <Text key={line}>{line}</Text>
+              ))}
+              <Text style={styles.closing}>{letter.closing}</Text>
+            </View>
             <View style={styles.table}>
               <View style={styles.tableRow}>
                 <Text style={styles.th}>件名</Text>
@@ -132,6 +146,11 @@ export function InvoiceDocument({ models }: { models: InvoiceViewModel[] }) {
               </View>
               <View style={styles.issuer}>
                 <Text style={styles.issuerName}>{snapshot.issuer.organizationName}</Text>
+                {snapshot.issuer.address ? (
+                  <Text style={styles.issuerAddress}>
+                    {[snapshot.issuer.postalCode, snapshot.issuer.address].filter(Boolean).join(" ")}
+                  </Text>
+                ) : null}
                 <Text>会長　{snapshot.issuer.chairmanName}</Text>
                 <Text>会計部長　{snapshot.issuer.treasurerName}</Text>
               </View>
@@ -163,7 +182,7 @@ export function LabelDocument({
   return (
     <Document title="宛名ラベル" language="ja">
       {pages.map((page, pageIndex) => (
-        <Page key={pageIndex} size="A4" style={{ fontFamily: "IPAexGothic", fontSize: settings.fontSizePt }}>
+        <Page key={pageIndex} size="A4" style={{ fontFamily: "IPAexMincho", fontSize: settings.fontSizePt }}>
           {page.map((card, index) => {
             if (!card) return null;
             const column = index % settings.columns;

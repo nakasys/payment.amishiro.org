@@ -13,7 +13,7 @@ export default async function LabelsPage() {
     });
   return (
     <div>
-      <PageTitle title="宛名ラベル" description="初期値はA4の2列×5段です。お使いのラベル用紙に合わせて余白とピッチを調整できます。" />
+      <PageTitle className="no-print" title="宛名ラベル" description="初期値はA4の2列×5段です。お使いのラベル用紙に合わせて余白とピッチを調整できます。" />
       <LabelStudio rows={rows} initial={state.labelSettings} />
     </div>
   );

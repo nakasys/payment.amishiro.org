@@ -13,7 +13,7 @@ const links = [
 export function Shell({ demo, children }: { demo: boolean; children: React.ReactNode }) {
   return (
     <div className="min-h-screen md:grid md:grid-cols-[220px_1fr]">
-      <aside className="border-b border-[var(--line)] bg-[#221c18] text-[#f6f1e8] md:min-h-screen md:border-b-0 md:border-r">
+      <aside className="no-print border-b border-[var(--line)] bg-[#221c18] text-[#f6f1e8] md:min-h-screen md:border-b-0 md:border-r">
         <div className="px-5 py-6">
           <p className="text-xs tracking-[0.18em] text-[#d7b4a3]">AZABU-JUBAN</p>
           <p className="mt-1 text-lg font-semibold">麻布十番網代会</p>
@@ -43,9 +43,9 @@ export function Shell({ demo, children }: { demo: boolean; children: React.React
   );
 }
 
-export function PageTitle({ title, description }: { title: string; description?: string }) {
+export function PageTitle({ title, description, className = "" }: { title: string; description?: string; className?: string }) {
   return (
-    <header className="mb-6">
+    <header className={`mb-6 ${className}`}>
       <h1 className="text-2xl font-semibold">{title}</h1>
       {description ? <p className="mt-1 text-sm text-[var(--muted)]">{description}</p> : null}
     </header>

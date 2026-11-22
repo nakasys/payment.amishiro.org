@@ -145,6 +145,17 @@ export function buildPreviewModel(
   };
 }
 
+
+export function invoiceLetter(): { lines: string[]; closing: string } {
+  return {
+    lines: [
+      "拝啓　貴社益々ご清祥のこととお喜び申し上げます。",
+      "さて、下記の通り本年度の町会費をご請求申し上げますので、宜しくお願いいたします。",
+    ],
+    closing: "敬具",
+  };
+}
+
 export function bankLines(bank: BankAccount): string[] {
   const holder = [bank.accountHolder, bank.accountHolderKana].filter(Boolean).join("　");
   return [

@@ -28,6 +28,9 @@ export function LabelStudio({ rows, initial }: { rows: LabelRow[]; initial: Labe
   const [selected, setSelected] = useState(rows.map((row) => row.id));
   const [start, setStart] = useState(0);
   const [message, setMessage] = useState("");
+  const [pending, setPending] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [printable, setPrintable] = useState(false);
 
   const href = useMemo(() => {
     const params = new URLSearchParams();
@@ -36,10 +39,15 @@ export function LabelStudio({ rows, initial }: { rows: LabelRow[]; initial: Labe
     for (const field of fields) params.set(field.key, String(settings[field.key]));
     return `/api/pdf/labels?${params.toString()}`;
   }, [selected, settings, start]);
+  const [seenHref, setSeenHref] = useState(href);
+  if (seenHref !== href) {
+    setSeenHref(href);
+    setPrintable(false);
+  }
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[320px_1fr]">
-      <div className="space-y-3">
+    <div className="grid gap-4 print:block lg:grid-cols-[320px_1fr]">
+      <div className="no-print space-y-3">
         <div className="grid grid-cols-2 gap-2 rounded-xl border border-[var(--line)] bg-white p-3">
           {fields.map((field) => (
             <label key={field.key} className="text-xs">
@@ -80,13 +88,19 @@ export function LabelStudio({ rows, initial }: { rows: LabelRow[]; initial: Labe
         <div className="flex flex-wrap gap-2">
           <button
             type="button"
-            className="rounded-md border border-[var(--line)] bg-white px-3 py-2 text-sm"
+            disabled={pending}
+            className="rounded-md border border-[var(--line)] bg-white px-3 py-2 text-sm disabled:opacity-60"
             onClick={async () => {
+              setPending(true);
+              setMessage("");
+              setSaved(false);
               const result = await saveLabelSettingsAction(settings);
-              setMessage(result.ok ? "用紙設定を保存しました" : result.error);
+              setPending(false);
+              setSaved(result.ok);
+              setMessage(result.ok ? "保存しました" : result.error);
             }}
           >
-            用紙設定を保存
+            {pending ? "保存中" : "用紙設定を保存"}
           </button>
           <a href={href} target="_blank" className="rounded-md bg-[var(--seal)] px-3 py-2 text-sm text-white">
             PDFを開く
@@ -94,10 +108,23 @@ export function LabelStudio({ rows, initial }: { rows: LabelRow[]; initial: Labe
           <a href={`${href}&download=1`} className="rounded-md border border-[var(--line)] bg-white px-3 py-2 text-sm">
             ダウンロード
           </a>
+          <button
+            type="button"
+            disabled={!printable || selected.length === 0}
+            className="rounded-md border border-[var(--line)] bg-white px-3 py-2 text-sm disabled:opacity-60"
+            onClick={() => window.print()}
+          >
+            {printable ? "印刷" : "印刷の準備中"}
+          </button>
         </div>
-        {message ? <p className="text-sm">{message}</p> : null}
+        {message ? <p className={`text-sm ${saved ? "text-[#2f6b45]" : "text-[var(--seal)]"}`}>{message}</p> : null}
       </div>
-      <iframe title="宛名ラベルプレビュー" src={href} className="h-[860px] w-full rounded-xl border border-[var(--line)] bg-white" />
+      <iframe
+        title="宛名ラベルプレビュー"
+        src={href}
+        onLoad={() => setPrintable(true)}
+        className="h-[860px] w-full rounded-xl border border-[var(--line)] bg-white print:rounded-none print:border-0"
+      />
     </div>
   );
 }
