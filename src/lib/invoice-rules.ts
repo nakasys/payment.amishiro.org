@@ -85,7 +85,6 @@ export function blockingReasons(recipient: Recipient, settings: Settings): strin
     reasons.push("発行者情報が未設定です");
   }
   if (!contact.name || !contact.phone) reasons.push("問い合わせ先が未設定です");
-  if (recipient.reviewFlags.includes("duplicate_candidate")) reasons.push("重複の可能性があります");
   if (recipient.reviewFlags.includes("withdrawn")) reasons.push("脱会としてマークされています");
   if (recipient.reviewFlags.includes("old_year") && (!year || year.amountYen == null)) {
     reasons.push("旧年度の情報のみで、今年度の金額がありません");
