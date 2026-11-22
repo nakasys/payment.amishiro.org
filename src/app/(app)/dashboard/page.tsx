@@ -13,8 +13,6 @@ export default async function DashboardPage() {
     ["請求予定総額", formatYen(stats.plannedTotal)],
     ["請求書発行済み", `${stats.issuedCount} 件`],
     ["未発行", `${stats.unissuedCount} 件`],
-    ["入金済み金額", formatYen(stats.paidTotal)],
-    ["未入金額", formatYen(stats.unpaidTotal)],
   ];
   return (
     <div>

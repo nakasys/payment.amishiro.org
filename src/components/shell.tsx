@@ -5,7 +5,6 @@ const links = [
   ["請求先", "/recipients"],
   ["請求書発行", "/invoices"],
   ["宛名ラベル", "/labels"],
-  ["入金管理", "/payments"],
   ["Excel取込", "/import"],
   ["基本設定", "/settings"],
 ];
